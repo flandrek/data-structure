@@ -1,0 +1,114 @@
+package Map;
+
+/**
+ * 基于链表实现的Map
+ *
+ * @author wangzhe
+ */
+public class LinkedListMap<K, V> implements Map<K, V> {
+    //节点内部类
+    private class Node {
+        public K key;
+        public V value;
+        public Node next;
+
+        public Node(K key, V value, Node next) {
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+
+        public Node(K key) {
+            this(key, null, null);
+        }
+
+        public Node() {
+            this(null, null, null);
+        }
+
+        @Override
+        public String toString() {
+            return key.toString() + ":" + value.toString();
+        }
+    }
+
+    private Node dummyHead;
+    private int size;
+
+    //构造函数
+    public LinkedListMap() {
+        dummyHead = new Node();
+        size = 0;
+    }
+
+    //传入一个键,返回该键对应的节点
+    private Node getNode(K key) {
+        Node cur = dummyHead.next;
+        while (cur != null) {
+            if (cur.key.equals(key))
+                return cur;
+            cur = cur.next;
+        }
+        return null;
+    }
+
+    @Override
+    public void add(K key, V value) {
+        Node node = getNode(key);
+        if (node == null) {
+            dummyHead.next = new Node(key, value, dummyHead.next);
+            size++;
+        } else
+            node.value = value;//添加了重复的键,更新value值即可
+    }
+
+    //删除键key对应的节点
+    @Override
+    public V remove(K key) {
+        Node prev = dummyHead;
+        while (prev.next != null) {
+            if (prev.next.key.equals(key))
+                break;
+            prev = prev.next;
+        }
+        if (prev.next != null) {
+            Node delNode = prev.next;
+            prev.next = delNode.next;
+            delNode.next = null;
+            size--;
+            return delNode.value;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean contains(K key) {
+        return getNode(key) != null;
+    }
+
+    //查询操作,通过key来找相应的value值
+    @Override
+    public V get(K key) {
+        Node node = getNode(key);
+        return node == null ? null : node.value;
+    }
+
+    //对指定的键赋上新的值
+    @Override
+    public void set(K key, V newValue) {
+        Node node = getNode(key);
+        if (node == null)
+            throw new IllegalArgumentException(key + "dosen't exist!");
+        node.value = newValue;
+    }
+
+    @Override
+    public int getSize() {
+        return size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return size == 0;
+    }
+}
